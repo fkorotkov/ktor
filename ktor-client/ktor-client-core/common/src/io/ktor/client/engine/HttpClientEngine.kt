@@ -6,6 +6,7 @@ package io.ktor.client.engine
 
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.util.*
@@ -62,7 +63,7 @@ interface HttpClientEngine : CoroutineScope, Closeable {
             validateHeaders(requestData)
             checkExtensions(requestData)
 
-            val responseData = executeWithinCallContext(requestData)
+            val responseData = executeWithinCallContext(context.attributes, requestData)
             val call = HttpClientCall(client, requestData, responseData)
 
             proceedWith(call)
@@ -72,15 +73,26 @@ interface HttpClientEngine : CoroutineScope, Closeable {
     /**
      * Create call context and use it as a coroutine context to [execute] request.
      */
-    private suspend fun executeWithinCallContext(requestData: HttpRequestData): HttpResponseData {
+    private suspend fun executeWithinCallContext(
+        attributes: Attributes,
+        requestData: HttpRequestData
+    ): HttpResponseData {
         val callContext = createCallContext(requestData.executionContext)
 
         return async(callContext + KtorCallContextElement(callContext)) {
-            if (closed) {
+            if (this@HttpClientEngine.closed) {
                 throw ClientEngineClosedException()
             }
 
-            execute(requestData)
+            val wrapper = attributes.getOrNull(HttpClientEngineWrapper.key)
+
+            if (wrapper != null) {
+                wrapper.executorWrapper {
+                    this@HttpClientEngine.execute(it)
+                }(requestData)
+            } else {
+                this@HttpClientEngine.execute(requestData)
+            }
         }.await()
     }
 
