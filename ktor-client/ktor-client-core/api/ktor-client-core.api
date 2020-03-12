@@ -613,6 +613,33 @@ public final class io/ktor/client/features/observer/ResponseObserverKt {
 	public static final fun ResponseObserver (Lio/ktor/client/HttpClientConfig;Lkotlin/jvm/functions/Function2;)V
 }
 
+public abstract interface class io/ktor/client/features/tracing/Tracer {
+	public abstract fun httpExchangeFailed (Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun interpretResponse (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;
+	public abstract fun requestWillBeSent (Ljava/lang/String;Lio/ktor/client/request/HttpRequestData;)V
+	public abstract fun responseHeadersReceived (Ljava/lang/String;Lio/ktor/client/request/HttpRequestData;Lio/ktor/client/request/HttpResponseData;)V
+	public abstract fun responseReadFinished (Ljava/lang/String;)V
+}
+
+public final class io/ktor/client/features/tracing/TracingFeature {
+	public static final field Feature Lio/ktor/client/features/tracing/TracingFeature$Feature;
+	public final fun getTracer ()Lio/ktor/client/features/tracing/Tracer;
+}
+
+public final class io/ktor/client/features/tracing/TracingFeature$Config {
+	public fun <init> ()V
+	public final fun getTracer ()Lio/ktor/client/features/tracing/Tracer;
+	public final fun setTracer (Lio/ktor/client/features/tracing/Tracer;)V
+}
+
+public final class io/ktor/client/features/tracing/TracingFeature$Feature : io/ktor/client/engine/HttpClientEngineCapability, io/ktor/client/features/HttpClientFeature {
+	public fun getKey ()Lio/ktor/util/AttributeKey;
+	public fun install (Lio/ktor/client/features/tracing/TracingFeature;Lio/ktor/client/HttpClient;)V
+	public synthetic fun install (Ljava/lang/Object;Lio/ktor/client/HttpClient;)V
+	public fun prepare (Lkotlin/jvm/functions/Function1;)Lio/ktor/client/features/tracing/TracingFeature;
+	public synthetic fun prepare (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+}
+
 public final class io/ktor/client/features/websocket/BuildersKt {
 	public static final fun webSocket (Lio/ktor/client/HttpClient;Lio/ktor/http/HttpMethod;Ljava/lang/String;ILjava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static final fun webSocket (Lio/ktor/client/HttpClient;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
